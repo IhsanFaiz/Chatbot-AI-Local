@@ -6,7 +6,16 @@ import ChatInput from "@/components/chat/ChatInput";
 import { ModeToggle } from "@/components/ui/darkmodeButton";
 
 export default function Home() {
-  const { messages, isLoading, isStreaming, sendMessage, messagesEndRef } = useChat();
+  const {
+    messages,
+    isLoading,
+    isStreaming,
+    isWebSearchActive,
+    toggleWebSearch,
+    sendMessage,
+    messagesEndRef,
+  } = useChat();
+
   const isChatActive = messages.length > 0;
 
   return (
@@ -16,6 +25,8 @@ export default function Home() {
           messages={messages}
           isLoading={isLoading}
           isStreaming={isStreaming}
+          isWebSearchActive={isWebSearchActive}
+          onToggleWebSearch={toggleWebSearch}
           sendMessage={sendMessage}
           messagesEndRef={messagesEndRef}
         />
@@ -34,7 +45,13 @@ export default function Home() {
             </p>
           </div>
 
-          <ChatInput onSend={sendMessage} isLoading={isLoading} isFloating={false} />
+          <ChatInput
+            onSend={sendMessage}
+            isLoading={isLoading}
+            isFloating={false}
+            isWebSearchActive={isWebSearchActive}
+            onToggleWebSearch={toggleWebSearch}
+          />
         </div>
       )}
     </>

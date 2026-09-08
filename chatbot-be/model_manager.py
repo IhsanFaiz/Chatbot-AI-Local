@@ -3,6 +3,7 @@ import os
 import json
 import torch
 import psutil
+import threading
 
 from config import PATHS, FLAGS, MODELS_CONFIG, SYSTEM_PROMPT, init_directories
 from huggingface_hub import hf_hub_download
@@ -15,6 +16,7 @@ except ImportError:
 
 current_model = None
 current_model_name = ""
+_model_lock = threading.Lock()
 
 def check_sys():
     """Display system hardware info (GPU, VRAM, RAM)."""
@@ -80,42 +82,43 @@ def load_model(model_key, silent=True):
     if not LLAMA_INSTALLED:
         raise RuntimeError("llama-cpp-python package is not installed.")
 
-    if current_model_name == model_key and current_model is not None:
+    with _model_lock:
+        if current_model_name == model_key and current_model is not None:
+            return current_model
+
+        if model_key not in MODELS_CONFIG:
+            raise ValueError(f"Unknown model key: {model_key}")
+
+        unload_model()
+
+        repo, filename = MODELS_CONFIG[model_key]
+        model_path = os.path.join(PATHS[model_key], filename)
+
+        if not os.path.exists(model_path):
+            print(f"[ModelManager] Model file missing: {model_path}. Attempting download...")
+            download_models()
+
+        gpu_layers = 28 if torch.cuda.is_available() else 0
+
+        try:
+            current_model = Llama(
+                model_path=model_path,
+                n_gpu_layers=gpu_layers,
+                n_ctx=4096,
+                n_batch=256,
+                use_mmap=True,
+                logits_all=False,
+                verbose=False
+            )
+            current_model_name = model_key
+            if not silent:
+                print(f"[ModelManager] Model {model_key} active. VRAM: {get_vram_usage():.0f}MB")
+        except Exception as e:
+            print(f"[ModelManager] Warning: Failed loading with GPU layers ({e}). Falling back to CPU.")
+            current_model = Llama(model_path=model_path, n_gpu_layers=0, n_ctx=4096, verbose=False)
+            current_model_name = model_key
+
         return current_model
-
-    if model_key not in MODELS_CONFIG:
-        raise ValueError(f"Unknown model key: {model_key}")
-
-    unload_model()
-
-    repo, filename = MODELS_CONFIG[model_key]
-    model_path = os.path.join(PATHS[model_key], filename)
-
-    if not os.path.exists(model_path):
-        print(f"[ModelManager] Model file missing: {model_path}. Attempting download...")
-        download_models()
-
-    gpu_layers = 28 if torch.cuda.is_available() else 0
-
-    try:
-        current_model = Llama(
-            model_path=model_path,
-            n_gpu_layers=gpu_layers,
-            n_ctx=2048,
-            n_batch=256,
-            use_mmap=True,
-            logits_all=False,
-            verbose=False
-        )
-        current_model_name = model_key
-        if not silent:
-            print(f"[ModelManager] Model {model_key} active. VRAM: {get_vram_usage():.0f}MB")
-    except Exception as e:
-        print(f"[ModelManager] Warning: Failed loading with GPU layers ({e}). Falling back to CPU.")
-        current_model = Llama(model_path=model_path, n_gpu_layers=0, n_ctx=2048, verbose=False)
-        current_model_name = model_key
-
-    return current_model
 
 def get_model_route(user_input):
     """Route user query to the most appropriate model based on content."""
@@ -132,9 +135,13 @@ def get_model_route(user_input):
         return "qwen_coder"
     return "qwen_chat"
 
-def build_prompt(user_input, history, max_history=3):
-    """Build Qwen ChatML formatted prompt with conversation history."""
-    full_prompt = f"<|im_start|>system\n{SYSTEM_PROMPT.strip()}<|im_end|>\n"
+def build_prompt(user_input, history, max_history=3, web_context=""):
+    """Build Qwen ChatML formatted prompt with conversation history and optional web context."""
+    system_text = SYSTEM_PROMPT.strip()
+    if web_context:
+        system_text += f"\n\n{web_context.strip()}"
+
+    full_prompt = f"<|im_start|>system\n{system_text}<|im_end|>\n"
 
     recent_history = history[-max_history:] if history else []
     for chat in recent_history:
@@ -146,29 +153,30 @@ def build_prompt(user_input, history, max_history=3):
     full_prompt += f"<|im_start|>user\n{user_input}<|im_end|>\n<|im_start|>assistant\n"
     return full_prompt
 
-def generate_stream(user_input, history, on_complete_callback=None):
+def generate_stream(user_input, history, web_context="", on_complete_callback=None):
     """Generator yielding SSE formatted tokens for streaming API."""
     target_model_key = get_model_route(user_input)
     load_model(target_model_key, silent=True)
 
-    full_prompt = build_prompt(user_input, history)
+    full_prompt = build_prompt(user_input, history, web_context=web_context)
     assistant_buffer = ""
 
     try:
-        streamer = current_model(
-            full_prompt,
-            max_tokens=1024,
-            temperature=0.2,
-            top_p=0.8,
-            stop=["<|im_end|>", "<|endoftext|>"],
-            stream=True
-        )
+        with _model_lock:
+            streamer = current_model(
+                full_prompt,
+                max_tokens=1024,
+                temperature=0.2,
+                top_p=0.8,
+                stop=["<|im_end|>", "<|endoftext|>"],
+                stream=True
+            )
 
-        for chunk in streamer:
-            token = chunk['choices'][0]['text']
-            if token:
-                assistant_buffer += token
-                yield f"data: {json.dumps({'text': token})}\n\n"
+            for chunk in streamer:
+                token = chunk['choices'][0]['text']
+                if token:
+                    assistant_buffer += token
+                    yield f"data: {json.dumps({'text': token})}\n\n"
 
         if on_complete_callback:
             on_complete_callback(user_input, assistant_buffer)
@@ -178,21 +186,22 @@ def generate_stream(user_input, history, on_complete_callback=None):
     except Exception as e:
         yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
-def generate_response(user_input, history):
+def generate_response(user_input, history, web_context=""):
     """Non-streaming complete response generator for CLI mode."""
     target_model_key = get_model_route(user_input)
     load_model(target_model_key, silent=True)
 
-    full_prompt = build_prompt(user_input, history)
+    full_prompt = build_prompt(user_input, history, web_context=web_context)
 
-    output = current_model(
-        full_prompt,
-        max_tokens=1024,
-        temperature=0.2,
-        top_p=0.8,
-        stop=["<|im_end|>", "<|endoftext|>"],
-        echo=False
-    )
+    with _model_lock:
+        output = current_model(
+            full_prompt,
+            max_tokens=1024,
+            temperature=0.2,
+            top_p=0.8,
+            stop=["<|im_end|>", "<|endoftext|>"],
+            echo=False
+        )
 
     response = output['choices'][0]['text'].strip()
     return response

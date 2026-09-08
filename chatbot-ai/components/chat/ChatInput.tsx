@@ -2,15 +2,23 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Image, Mic } from "lucide-react";
+import { Send, Image, Mic, Globe } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (text: string) => void;
   isLoading: boolean;
   isFloating?: boolean;
+  isWebSearchActive?: boolean;
+  onToggleWebSearch?: () => void;
 }
 
-function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInputProps) {
+function ChatInputComponent({
+  onSend,
+  isLoading,
+  isFloating = false,
+  isWebSearchActive = true,
+  onToggleWebSearch,
+}: ChatInputProps) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -67,7 +75,7 @@ function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInput
           onKeyDown={handleKeyDown}
           disabled={isLoading}
           rows={1}
-          className="w-full min-h-[56px] max-h-40 pl-6 pr-32 py-3.5 rounded-3xl text-base bg-background/95 border border-muted-foreground/20 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 shadow-lg backdrop-blur-md resize-none overflow-y-auto outline-none transition-all text-foreground placeholder:text-muted-foreground"
+          className="w-full min-h-[56px] max-h-40 pl-6 pr-44 py-3.5 rounded-3xl text-base bg-background/95 border border-muted-foreground/20 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 shadow-lg backdrop-blur-md resize-none overflow-y-auto outline-none transition-all text-foreground placeholder:text-muted-foreground"
           placeholder="Ask Something..."
         />
 
@@ -76,7 +84,26 @@ function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInput
             type="button"
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
+            onClick={onToggleWebSearch}
+            title={
+              isWebSearchActive
+                ? "Web Search is ON (Click to disable)"
+                : "Web Search is OFF (Click to enable)"
+            }
+            className={`h-10 w-10 rounded-full transition-all cursor-pointer ${
+              isWebSearchActive
+                ? "text-blue-500 bg-blue-500/15 hover:bg-blue-500/25 dark:text-blue-400"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            <Globe className="h-5 w-5" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
           >
             <Image className="h-5 w-5" />
           </Button>
@@ -85,7 +112,7 @@ function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInput
             type="button"
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
+            className="h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
           >
             <Mic className="h-5 w-5" />
           </Button>

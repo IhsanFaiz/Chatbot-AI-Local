@@ -18,7 +18,7 @@ function ChatMessagesComponent({
   messagesEndRef,
 }: ChatMessagesProps) {
   return (
-    <div className="w-full overflow-y-auto pt-17 pb-40 flex flex-col gap-4">
+    <div className="w-full overflow-y-auto pt-17 pb-40 flex flex-col gap-10">
       {messages.map((m, index) => {
         const isLastMessage = index === messages.length - 1;
         const messageStreaming = isLastMessage && isStreaming;
@@ -29,6 +29,9 @@ function ChatMessagesComponent({
             key={index}
             sender={m.sender}
             text={m.text}
+            status={m.status}
+            statusText={m.statusText}
+            sources={m.sources}
             isStreaming={messageStreaming}
             isLoading={messageLoading}
           />
