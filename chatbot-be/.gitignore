@@ -1,0 +1,26 @@
+# Environment files
+.env
+.env.local
+!.env.example
+
+# Local LLM Models, GGUF binaries, cache, logs, and flags (DO NOT PUSH TO GITHUB)
+local_llm/
+models/
+cache/
+logs/
+flags/
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.flag
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.log

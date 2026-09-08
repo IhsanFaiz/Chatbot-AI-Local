@@ -1,0 +1,37 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Local LLM Models and heavy GGUF/binary files (DO NOT PUSH TO GITHUB)
+local_llm/
+chatbot-be/local_llm/
+*.gguf
+*.bin
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.flag
+
+# Python virtual environment and cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Node / Next.js (Frontend)
+node_modules/
+chatbot-ai/node_modules/
+chatbot-ai/.next/
+chatbot-ai/out/
+chatbot-ai/build/
+chatbot-ai/.vercel/
+.DS_Store
+Thumbs.db
+*.log
