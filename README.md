@@ -1,130 +1,139 @@
 <div align="center">
-  <img src="docs/assets/nox_ai_hero_banner.jpg" alt="Nox AI Hero Banner" width="100%" style="border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin-bottom: 20px;">
+  <img src="docs/assets/nox_ai_hero_banner.jpg" alt="Nox AI Hero Banner" style="max-width: 800px; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); margin-bottom: 24px;">
 
-  # 🌟 Nox AI - Advanced Local Coding Assistant
+  # 🌟 Nox AI — Advanced Local Coding Assistant
 
-  **Solusi lengkap (Fullstack) untuk asisten pemrograman AI cerdas, aman, dan privasi-terjaga yang berjalan sepenuhnya di perangkat lokal Anda.**
+  **A full-stack, privacy-focused intelligent AI coding assistant running 100% locally on your machine.**
 
   [![Backend: Flask](https://img.shields.io/badge/Backend-Flask%20%7C%20Python-blue?style=for-the-badge&logo=flask)](./chatbot-be)
   [![Frontend: Next.js](https://img.shields.io/badge/Frontend-Next.js%20%7C%20React-black?style=for-the-badge&logo=next.js)](./chatbot-ai)
-  [![AI: Llama.cpp](https://img.shields.io/badge/AI-Llama.cpp%20%7C%20GGUF-orange?style=for-the-badge&logo=c%2B%2B)](https://github.com/abetlen/llama-cpp-python)
+  [![AI Engine: Llama.cpp](https://img.shields.io/badge/AI%20Engine-Llama.cpp%20%7C%20GGUF-orange?style=for-the-badge&logo=c%2B%2B)](https://github.com/abetlen/llama-cpp-python)
+  [![Privacy: 100% Offline](https://img.shields.io/badge/Privacy-100%25%20Local-green?style=for-the-badge)](#-key-features)
 </div>
 
 <br>
 
-## 📖 Deskripsi Proyek
+## 📖 Overview
 
-**Nox AI** adalah sistem *fullstack chatbot* yang dirancang khusus untuk menjadi asisten pemrograman (*coding assistant*). Tidak seperti asisten AI konvensional yang mengirimkan kode sumber Anda ke server pihak ketiga, Nox AI menjalankan model GGUF tingkat lanjut (seperti Qwen 2.5 Coder dan DeepSeek Coder) secara **100% lokal**. 
+**Nox AI** is a full-stack chatbot platform engineered specifically as an intelligent coding assistant. Unlike conventional cloud-based AI solutions that transmit your sensitive codebase to third-party servers, Nox AI executes GGUF quantized models (such as *Qwen 2.5 Coder* and *DeepSeek Coder*) **entirely on your local hardware**.
 
-Hal ini menjamin privasi kode sumber Anda, mengurangi latensi, dan memberikan kemampuan pemrograman yang tajam bahkan tanpa koneksi internet.
-
----
-
-## ✨ Fitur Unggulan
-
-- 🔒 **Privacy-First (100% Local)**: Tidak ada baris kode Anda yang dikirim ke server eksternal. Semua pemrosesan data dilakukan di mesin lokal.
-- 🧠 **Intelligent Model Routing**: Nox AI secara otomatis mendeteksi seberapa kompleks pertanyaan Anda dan mengalihkannya ke model yang paling efisien:
-  - `Qwen 2.5 Chat 3B` untuk percakapan umum.
-  - `Qwen 2.5 Coder 3B` untuk perbaikan kode dan algoritma.
-  - `DeepSeek Coder 1.3B` untuk analisis skrip yang panjang.
-- ⚡ **Real-time SSE Streaming**: Nikmati respons instan dari AI seperti mengetik secara real-time.
-- 🎨 **Modern UI/UX**: Frontend dibangun dengan Next.js dan TailwindCSS yang menghadirkan tampilan *sleek*, *dark-mode*, dan interaktif.
-- 🌐 **Ngrok Integration**: Backend memiliki dukungan terintegrasi dengan Ngrok jika Anda perlu membagikan endpoint AI ke luar atau untuk pengujian tim.
+This approach guarantees absolute privacy for your source code, minimizes inference latency, and provides powerful developer capabilities even without an active internet connection.
 
 ---
 
-## 🏗️ Arsitektur Proyek (Monorepo)
+## ✨ Key Features
 
-Proyek ini dibagi menjadi dua bagian utama: Frontend dan Backend.
+- 🔒 **Privacy-First (100% Local)**: Zero code telemetry. All data processing and LLM inferences take place locally on your computer.
+- 🧠 **Intelligent Model Routing**: Automatically detects prompt complexity and selects the optimal model for the task:
+  - `Qwen 2.5 Chat 3B` — General conversations and explanations.
+  - `Qwen 2.5 Coder 3B` — Code generation, algorithm optimization, and debugging.
+  - `DeepSeek Coder 1.3B` — Rapid script analysis and lightweight tasks.
+- ⚡ **Real-Time SSE Streaming**: Instant response generation using Server-Sent Events for a smooth, interactive typing experience.
+- 🎨 **Modern & Responsive UI**: Designed with Next.js and Tailwind CSS, offering a clean dark-mode interface, inline code highlighting, and auto-scroll capabilities.
+- 🌐 **Built-in Ngrok Support**: Optional integrated tunneling support for sharing local endpoints securely during remote testing.
+
+---
+
+## 🏗️ Repository Architecture
+
+This project is structured as a clean monorepo containing distinct frontend and backend applications:
 
 ```text
 fullstack-chatbot/
-├── chatbot-ai/      # 🖥️ FRONTEND (Next.js, React, TailwindCSS)
-│   ├── app/         # Routing dan komponen utama aplikasi Next.js
-│   ├── components/  # Komponen UI chat yang reusable
-│   └── public/      # Aset statis web
+├── chatbot-ai/      # 🖥️ FRONTEND (Next.js 15, React 19, Tailwind CSS)
+│   ├── app/         # App router pages and global styles
+│   ├── components/  # Modular chat components (ChatInput, ChatMessage, etc.)
+│   └── public/      # Static web assets
 │
-├── chatbot-be/      # ⚙️ BACKEND (Python Flask, Llama.cpp)
-│   ├── app.py       # API Endpoint Server (SSE)
-│   ├── local_llm/   # Tempat penyimpanan model AI (GGUF)
-│   ├── cli.py       # Mode chat langsung via terminal
-│   └── config.py    # Konfigurasi sistem dan enviroment
+├── chatbot-be/      # ⚙️ BACKEND (Python 3, Flask, Llama.cpp)
+│   ├── app.py       # Flask REST & SSE Streaming API Server
+│   ├── local_llm/   # GGUF AI model storage directory
+│   ├── cli.py       # Standalone interactive terminal chat mode
+│   └── config.py    # Global configuration and environment settings
 │
-├── docs/            # Dokumentasi & Aset gambar
-└── README.md        # Dokumentasi utama (File ini)
+├── docs/            # Project documentation and assets
+└── README.md        # Primary project documentation (This file)
 ```
 
 ---
 
-## 🚀 Cara Memulai (Getting Started)
+## 🚀 Getting Started
 
-### 1. Menyiapkan Backend (`chatbot-be`)
+### Prerequisites
 
-Backend Nox AI bertanggung jawab untuk memuat dan memproses model AI GGUF. 
+Ensure you have the following software installed on your system:
+- **Python** (v3.10 or higher)
+- **Node.js** (v18 or higher) and `npm`
 
-1. Masuk ke direktori backend:
+---
+
+### 1. Setting Up the Backend (`chatbot-be`)
+
+1. Navigate to the backend directory:
    ```bash
    cd chatbot-be
    ```
-2. Buat Virtual Environment (opsional namun disarankan) dan install dependensi:
+2. Create and activate a Virtual Environment (recommended):
+   ```bash
+   python -m venv venv
+   # Windows:
+   venv\Scripts\activate
+   # Linux/macOS:
+   source venv/bin/activate
+   ```
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Konfigurasi Environment:
+4. Setup environment variables:
    ```bash
    cp .env.example .env
    ```
-   *(Sesuaikan isi `.env` sesuai kebutuhan, misalnya mematikan Ngrok dengan `USE_NGROK=false`)*
-4. Jalankan Server API:
+   *(Optionally edit `.env` to configure ports or toggle Ngrok with `USE_NGROK=false`)*
+5. Start the backend API server:
    ```bash
-   python main.py
+   python app.py
    ```
-   > Server secara default akan berjalan di `http://127.0.0.1:5001`.
+   > The API server will run locally at `http://127.0.0.1:5001`.
 
-*(Untuk dokumentasi lengkap tentang endpoint backend, silakan merujuk ke [README Backend](./chatbot-be/README.md)).*
+*(For detailed endpoint documentation, see the [Backend README](./chatbot-be/README.md)).*
 
 <br>
 
-### 2. Menyiapkan Frontend (`chatbot-ai`)
+### 2. Setting Up the Frontend (`chatbot-ai`)
 
-Frontend menyediakan antarmuka interaktif bagi pengguna untuk berkomunikasi dengan Nox AI.
-
-1. Buka terminal baru dan masuk ke direktori frontend:
+1. Open a new terminal tab and navigate to the frontend directory:
    ```bash
    cd chatbot-ai
    ```
-2. Install dependencies (Pastikan Anda sudah menginstal Node.js):
+2. Install Node dependencies:
    ```bash
    npm install
    ```
-3. Konfigurasi Endpoint:
-   Pastikan aplikasi React mengarah ke `http://127.0.0.1:5001` sesuai dengan port yang terbuka di Backend.
-4. Jalankan Development Server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
-5. Buka [http://localhost:3000](http://localhost:3000) di browser favorit Anda dan mulailah berdiskusi dengan Nox AI!
+4. Open [http://localhost:3000](http://localhost:3000) in your web browser to interact with Nox AI!
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Tech Stack
 
-**Frontend:**
-- [Next.js 15](https://nextjs.org/) (React Framework)
-- [Tailwind CSS](https://tailwindcss.com/) (Styling)
-
-**Backend:**
-- [Python 3](https://www.python.org/)
-- [Flask](https://flask.palletsprojects.com/) (Web API)
-- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) (AI Inference)
-- [HuggingFace Hub](https://huggingface.co/) (Model Source)
+| Domain | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend Framework** | [Next.js 15](https://nextjs.org/) | React framework with App Router |
+| **UI & Styling** | [Tailwind CSS](https://tailwindcss.com/) | Modern utility-first CSS framework |
+| **Backend API** | [Flask](https://flask.palletsprojects.com/) | Lightweight Python Web API with SSE support |
+| **AI Engine** | [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) | High-performance C++ GGUF inference binding |
+| **Model Weights** | [Hugging Face](https://huggingface.co/) | Quantized open-weight GGUF coding models |
 
 ---
 
-## 📜 Lisensi & Kontribusi
+## 📜 License & Contributions
 
-Proyek ini dibangun untuk tujuan edukasi dan peningkatan produktivitas developer. Kontribusi dari komunitas sangat diapresiasi! Jangan ragu untuk membuat *Pull Request* atau melaporkan *Issue* jika menemukan bug.
+This project is open-source and built for developers who value privacy and AI productivity. Community contributions, feature suggestions, and bug reports are warmly welcome!
 
 <div align="center">
-  <p>Dibuat dengan ❤️ untuk para developer.</p>
+  <sub>Built with ❤️ for privacy-conscious software engineers.</sub>
 </div>
