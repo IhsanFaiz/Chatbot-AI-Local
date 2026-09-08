@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/nox_ai_hero_banner.jpg" alt="Nox AI Hero Banner" style="max-width: 800px; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); margin-bottom: 24px;">
+  <img src="docs/assets/nox_ai_for_banner.jpg" alt="Nox AI Hero Banner" style="max-width: 800px; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); margin-bottom: 24px;">
 
   # 🌟 Nox AI — Advanced Local Coding Assistant
 
