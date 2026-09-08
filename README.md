@@ -1,58 +1,69 @@
 <div align="center">
-  <img src="docs/assets/nox_ai_for_banner.jpg" alt="Nox AI Hero Banner" style="max-width: 800px; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); margin-bottom: 24px;">
+  <img src="docs/assets/nox_ai_for_banner.jpg" alt="Nox AI Banner" style="max-width: 800px; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); margin-bottom: 24px;">
 
-  # 🌟 Nox AI — Advanced Local Coding Assistant
+  # 🌟 Nox AI — Local AI Coding Assistant
 
-  **A full-stack, privacy-focused intelligent AI coding assistant running 100% locally on your machine.**
+  **A local chatbot interface for running open-source AI coding models directly on your machine.**
 
   [![Backend: Flask](https://img.shields.io/badge/Backend-Flask%20%7C%20Python-blue?style=for-the-badge&logo=flask)](./chatbot-be)
   [![Frontend: Next.js](https://img.shields.io/badge/Frontend-Next.js%20%7C%20React-black?style=for-the-badge&logo=next.js)](./chatbot-ai)
   [![AI Engine: Llama.cpp](https://img.shields.io/badge/AI%20Engine-Llama.cpp%20%7C%20GGUF-orange?style=for-the-badge&logo=c%2B%2B)](https://github.com/abetlen/llama-cpp-python)
-  [![Privacy: 100% Offline](https://img.shields.io/badge/Privacy-100%25%20Local-green?style=for-the-badge)](#-key-features)
 </div>
 
 <br>
 
 ## 📖 Overview
 
-**Nox AI** is a full-stack chatbot platform engineered specifically as an intelligent coding assistant. Unlike conventional cloud-based AI solutions that transmit your sensitive codebase to third-party servers, Nox AI executes GGUF quantized models (such as *Qwen 2.5 Coder* and *DeepSeek Coder*) **entirely on your local hardware**.
+**Nox AI** is a full-stack chatbot application that allows you to run quantized GGUF models locally. It provides a web interface to interact with models like *Qwen 2.5 Coder* and *DeepSeek Coder* without needing to send your code to external APIs. 
 
-This approach guarantees absolute privacy for your source code, minimizes inference latency, and provides powerful developer capabilities even without an active internet connection.
+By running the models locally, you can keep your source code on your machine and use the assistant even when offline.
+
+---
+
+## 💻 System Requirements
+
+Running local AI models requires decent hardware. Since this project uses `llama-cpp-python`, performance will depend on your CPU and whether you can offload processing to a GPU.
+
+### Minimum Requirements (for 1.3B - 3B models)
+- **OS**: Windows, macOS, or Linux
+- **RAM**: 8 GB system memory
+- **Storage**: ~5-10 GB of free space (for downloading GGUF model files)
+
+### Recommended Requirements (for better inference speed)
+- **RAM**: 16 GB or higher
+- **GPU**: A dedicated GPU with at least 4GB VRAM (NVIDIA, AMD, or Apple Silicon) is highly recommended. You can offload model layers to the GPU to significantly speed up token generation.
 
 ---
 
 ## ✨ Key Features
 
-- 🔒 **Privacy-First (100% Local)**: Zero code telemetry. All data processing and LLM inferences take place locally on your computer.
-- 🧠 **Intelligent Model Routing**: Automatically detects prompt complexity and selects the optimal model for the task:
-  - `Qwen 2.5 Chat 3B` — General conversations and explanations.
-  - `Qwen 2.5 Coder 3B` — Code generation, algorithm optimization, and debugging.
-  - `DeepSeek Coder 1.3B` — Rapid script analysis and lightweight tasks.
-- ⚡ **Real-Time SSE Streaming**: Instant response generation using Server-Sent Events for a smooth, interactive typing experience.
-- 🎨 **Modern & Responsive UI**: Designed with Next.js and Tailwind CSS, offering a clean dark-mode interface, inline code highlighting, and auto-scroll capabilities.
-- 🌐 **Built-in Ngrok Support**: Optional integrated tunneling support for sharing local endpoints securely during remote testing.
+- 🔒 **Local Execution**: Runs entirely on your own hardware. No external server calls are made for inference.
+- 🧠 **Model Selection**: Switch between different models (like Qwen or DeepSeek) depending on the task and your hardware capabilities.
+- ⚡ **Streaming Responses**: Uses Server-Sent Events (SSE) to stream text back to the UI as it generates.
+- 🎨 **Web UI**: A straightforward, responsive interface built with Next.js and Tailwind CSS, featuring dark mode and code highlighting.
+- 🌐 **Ngrok Support**: Optional integrated tunneling if you need to access your local backend remotely.
 
 ---
 
 ## 🏗️ Repository Architecture
 
-This project is structured as a clean monorepo containing distinct frontend and backend applications:
+The project is a monorepo containing a frontend and a backend:
 
 ```text
 fullstack-chatbot/
 ├── chatbot-ai/      # 🖥️ FRONTEND (Next.js 15, React 19, Tailwind CSS)
-│   ├── app/         # App router pages and global styles
-│   ├── components/  # Modular chat components (ChatInput, ChatMessage, etc.)
-│   └── public/      # Static web assets
+│   ├── app/         # App router pages
+│   ├── components/  # UI components
+│   └── public/      # Static assets
 │
 ├── chatbot-be/      # ⚙️ BACKEND (Python 3, Flask, Llama.cpp)
-│   ├── app.py       # Flask REST & SSE Streaming API Server
-│   ├── local_llm/   # GGUF AI model storage directory
-│   ├── cli.py       # Standalone interactive terminal chat mode
-│   └── config.py    # Global configuration and environment settings
+│   ├── app.py       # Flask REST & SSE API
+│   ├── local_llm/   # Directory for GGUF model files
+│   ├── cli.py       # Terminal chat mode
+│   └── config.py    # Configuration and environment variables
 │
-├── docs/            # Project documentation and assets
-└── README.md        # Primary project documentation (This file)
+├── docs/            # Documentation and assets
+└── README.md        # This file
 ```
 
 ---
@@ -61,7 +72,7 @@ fullstack-chatbot/
 
 ### Prerequisites
 
-Ensure you have the following software installed on your system:
+Ensure you have the following installed:
 - **Python** (v3.10 or higher)
 - **Node.js** (v18 or higher) and `npm`
 
@@ -85,18 +96,19 @@ Ensure you have the following software installed on your system:
    ```bash
    pip install -r requirements.txt
    ```
+   > **Note**: For GPU acceleration with `llama-cpp-python`, you may need to install it with specific build flags (e.g., `CMAKE_ARGS="-DGGML_CUDA=on"` for NVIDIA). Check the [llama-cpp-python documentation](https://github.com/abetlen/llama-cpp-python) for details.
 4. Setup environment variables:
    ```bash
    cp .env.example .env
    ```
-   *(Optionally edit `.env` to configure ports or toggle Ngrok with `USE_NGROK=false`)*
+   *(Edit `.env` to configure ports or toggle Ngrok with `USE_NGROK=false`)*
 5. Start the backend API server:
    ```bash
    python app.py
    ```
    > The API server will run locally at `http://127.0.0.1:5001`.
 
-*(For detailed endpoint documentation, see the [Backend README](./chatbot-be/README.md)).*
+*(For more details, see the [Backend README](./chatbot-be/README.md)).*
 
 <br>
 
@@ -114,26 +126,26 @@ Ensure you have the following software installed on your system:
    ```bash
    npm run dev
    ```
-4. Open [http://localhost:3000](http://localhost:3000) in your web browser to interact with Nox AI!
+4. Open [http://localhost:3000](http://localhost:3000) in your web browser to start using the app.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Domain | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend Framework** | [Next.js 15](https://nextjs.org/) | React framework with App Router |
-| **UI & Styling** | [Tailwind CSS](https://tailwindcss.com/) | Modern utility-first CSS framework |
-| **Backend API** | [Flask](https://flask.palletsprojects.com/) | Lightweight Python Web API with SSE support |
-| **AI Engine** | [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) | High-performance C++ GGUF inference binding |
-| **Model Weights** | [Hugging Face](https://huggingface.co/) | Quantized open-weight GGUF coding models |
+| Domain | Technology |
+| :--- | :--- |
+| **Frontend Framework** | [Next.js 15](https://nextjs.org/) |
+| **UI & Styling** | [Tailwind CSS](https://tailwindcss.com/) |
+| **Backend API** | [Flask](https://flask.palletsprojects.com/) |
+| **AI Engine** | [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) |
+| **Model Weights** | [Hugging Face](https://huggingface.co/) |
 
 ---
 
 ## 📜 License & Contributions
 
-This project is open-source and built for developers who value privacy and AI productivity. Community contributions, feature suggestions, and bug reports are warmly welcome!
+This is an open-source project. Feel free to submit issues or pull requests if you have suggestions or improvements!
 
 <div align="center">
-  <sub>Built with ❤️ for privacy-conscious software engineers.</sub>
+  <sub>Built for developers running local AI.</sub>
 </div>
