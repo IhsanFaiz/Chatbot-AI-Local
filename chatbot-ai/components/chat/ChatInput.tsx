@@ -46,11 +46,11 @@ function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInput
   );
 
   const formClasses = isFloating
-    ? "fixed bottom-6 left-0 right-0 flex items-center justify-center bg-gradient-to-t from-background via-background/90 to-transparent pt-4 pb-2 z-20"
+    ? "fixed bottom-6 left-0 right-0 flex items-center justify-center z-20 pointer-events-none"
     : "relative w-full max-w-2xl flex items-end z-10";
 
   const containerClasses = isFloating
-    ? "relative w-full max-w-3xl flex items-end z-10 px-4"
+    ? "relative w-full max-w-3xl flex items-end z-10 px-4 pointer-events-auto"
     : "relative w-full flex items-end z-10";
 
   const rightActionClasses = isFloating
@@ -67,7 +67,7 @@ function ChatInputComponent({ onSend, isLoading, isFloating = false }: ChatInput
           onKeyDown={handleKeyDown}
           disabled={isLoading}
           rows={1}
-          className="w-full min-h-[56px] max-h-40 pl-6 pr-32 py-3.5 rounded-3xl text-base bg-muted/40 border border-muted-foreground/20 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 shadow-sm backdrop-blur-sm resize-none overflow-y-auto outline-none transition-all text-foreground placeholder:text-muted-foreground"
+          className="w-full min-h-[56px] max-h-40 pl-6 pr-32 py-3.5 rounded-3xl text-base bg-background/95 border border-muted-foreground/20 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 shadow-lg backdrop-blur-md resize-none overflow-y-auto outline-none transition-all text-foreground placeholder:text-muted-foreground"
           placeholder="Ask Something..."
         />
 
