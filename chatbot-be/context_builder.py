@@ -10,7 +10,7 @@ def sanitize_text(text: str) -> str:
             .replace("<|endoftext|>", "[endoftext]")
     )
 
-def build_context(results: List[Dict[str, Any]], max_sources: int = 5, max_chars: int = 6500) -> str:
+def build_context(results: List[Dict[str, Any]], max_sources: int = 4, max_chars: int = 3500) -> str:
     """
     Format web search & scraped results into a structured prompt context for the LLM.
     
@@ -42,8 +42,8 @@ def build_context(results: List[Dict[str, Any]], max_sources: int = 5, max_chars
         if not content:
             continue
 
-        # Per source character limit (~1200 chars)
-        content_snippet = content[:1200].strip()
+        # Per source character limit (~800 chars for concise retrieval)
+        content_snippet = content[:800].strip()
 
         block = (
             f"[SOURCE {idx}]\n"

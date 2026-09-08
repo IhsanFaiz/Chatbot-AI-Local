@@ -101,12 +101,8 @@ def chat_api():
             analysis = None
 
             if WEB_SEARCH_ENABLED and web_search_param is not False:
-                if web_search_param is True:
-                    should_search = True
-                    analysis = needs_web_search(user_input)
-                else:
-                    analysis = needs_web_search(user_input)
-                    should_search = analysis.get("need_web", False)
+                analysis = needs_web_search(user_input)
+                should_search = analysis.get("need_web", False)
 
             web_context = ""
             citations = []

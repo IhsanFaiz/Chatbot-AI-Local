@@ -9,8 +9,6 @@ interface ChatContainerProps {
   messages: ChatMessageData[];
   isLoading: boolean;
   isStreaming: boolean;
-  isWebSearchActive: boolean;
-  onToggleWebSearch: () => void;
   sendMessage: (text: string) => void;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
 }
@@ -19,8 +17,6 @@ function ChatContainerComponent({
   messages,
   isLoading,
   isStreaming,
-  isWebSearchActive,
-  onToggleWebSearch,
   sendMessage,
   messagesEndRef,
 }: ChatContainerProps) {
@@ -36,8 +32,6 @@ function ChatContainerComponent({
         onSend={sendMessage}
         isLoading={isLoading}
         isFloating={true}
-        isWebSearchActive={isWebSearchActive}
-        onToggleWebSearch={onToggleWebSearch}
       />
     </div>
   );

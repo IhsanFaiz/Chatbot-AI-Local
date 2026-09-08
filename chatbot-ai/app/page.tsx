@@ -10,8 +10,6 @@ export default function Home() {
     messages,
     isLoading,
     isStreaming,
-    isWebSearchActive,
-    toggleWebSearch,
     sendMessage,
     messagesEndRef,
   } = useChat();
@@ -25,8 +23,6 @@ export default function Home() {
           messages={messages}
           isLoading={isLoading}
           isStreaming={isStreaming}
-          isWebSearchActive={isWebSearchActive}
-          onToggleWebSearch={toggleWebSearch}
           sendMessage={sendMessage}
           messagesEndRef={messagesEndRef}
         />
@@ -49,8 +45,6 @@ export default function Home() {
             onSend={sendMessage}
             isLoading={isLoading}
             isFloating={false}
-            isWebSearchActive={isWebSearchActive}
-            onToggleWebSearch={toggleWebSearch}
           />
         </div>
       )}

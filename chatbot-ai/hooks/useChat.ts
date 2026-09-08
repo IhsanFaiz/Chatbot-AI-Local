@@ -20,7 +20,6 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [isWebSearchActive, setIsWebSearchActive] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Auto-scroll helper
@@ -32,12 +31,8 @@ export function useChat() {
     }
   }, []);
 
-  const toggleWebSearch = useCallback(() => {
-    setIsWebSearchActive((prev) => !prev);
-  }, []);
-
   const sendMessage = useCallback(
-    async (text: string, forceWebSearch?: boolean) => {
+    async (text: string) => {
       if (!text.trim() || isLoading) return;
 
       setIsLoading(true);
@@ -54,7 +49,6 @@ export function useChat() {
       requestAnimationFrame(() => scrollToBottom(true));
 
       try {
-        const useWeb = forceWebSearch !== undefined ? forceWebSearch : isWebSearchActive;
         const response = await fetch("http://127.0.0.1:5001/chat", {
           method: "POST",
           headers: {
@@ -63,7 +57,6 @@ export function useChat() {
           },
           body: JSON.stringify({
             message: text,
-            web_search: useWeb,
           }),
         });
 
@@ -241,15 +234,13 @@ export function useChat() {
         requestAnimationFrame(() => scrollToBottom(false));
       }
     },
-    [isLoading, isWebSearchActive, scrollToBottom]
+    [isLoading, scrollToBottom]
   );
 
   return {
     messages,
     isLoading,
     isStreaming,
-    isWebSearchActive,
-    toggleWebSearch,
     sendMessage,
     messagesEndRef,
   };
